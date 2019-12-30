@@ -11,7 +11,7 @@ def main(*args, **kwargs):
                     help='Input enconding',
                     default='guess')
     ap.add_argument('-gl', '--guess_length',
-                    help='Number of bytes to use for guessing.-1=all',
+                    help='Number of bytes to use for guessing. -1=all',
                     default=1024)
     ap.add_argument('-oe', '--output_encoding',
                     help='Output enconding',
