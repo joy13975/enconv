@@ -7,7 +7,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setuptools.setup(
-    name="enconv-joy13975",
+    name="enconv",
     version="0.0.1",
     author="Joy Yeh",
     author_email="joyyeh.tw@gmail.com",
