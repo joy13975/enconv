@@ -1,6 +1,6 @@
 import argparse
 
-from encoding_converter import EncodingConverter
+from .encoding_converter import EncodingConverter
 
 def main(*args, **kwargs):
     ap = argparse.ArgumentParser(description='Guess and convert between encodings')
