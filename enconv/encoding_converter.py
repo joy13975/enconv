@@ -49,10 +49,11 @@ class EncodingConverter:
                 overwrite_ok = input('Output file exists. Overwrite?\n(y/n): ')
                 if overwrite_ok.lower() != 'y':
                     print('Abort writting.')
-                    return
+                    return False
             decoded_str = self.filebytes.decode(self.input_encoding, errors='ignore')
             with open(self.output_file, 'w', encoding=self.output_encoding) as file:
                 file.write(decoded_str)
+            return True
         except Exception as e:
             raise Exception(f'Failed to write to file {self.output_file}. ') from e
 

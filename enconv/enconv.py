@@ -28,9 +28,10 @@ def main(*args, **kwargs):
         guess_result = ec.guess()
         print(f'Guess: {guess_result}')
         ec.input_encoding = guess_result['encoding']
-    ec.convert()
-    print(f'Wrote to {ec.output_file} in {ec.output_encoding}')
-    print('Done')
+    if ec.convert():
+        print(f'Wrote to {ec.output_file} in {ec.output_encoding}')
+    else:
+        print(f'Conversion failed.')
 
 
 if __name__  == '__main__':
