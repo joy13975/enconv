@@ -4,6 +4,9 @@ from time import sleep
 
 from .encoding_converter import EncodingConverter
 
+exclude_files = ['.DS_Store']
+include_extensions = ['txt']
+
 def main(*args, **kwargs):
     ap = argparse.ArgumentParser(description='Guess and convert '
         'file encodings from source to destination folders')
@@ -52,8 +55,11 @@ def main(*args, **kwargs):
             filenames = [f for f in os.listdir(args.input_dir)
                         if os.path.isfile(os.path.join(args.input_dir, f))]
             for filename in filenames:
-                if filename.startswith(failure_mark):
+                if filename.startswith(failure_mark) or filename in exclude_files:
                     continue
+                if filename.split('.')[-1] not in include_extensions:
+                    continue
+                print(f'Converting {filename}')
                 ec_args = args_dict.copy()
                 input_path = os.path.join(args.input_dir, filename)
                 ec_args['input_file'] = input_path
@@ -64,11 +70,14 @@ def main(*args, **kwargs):
                     guess_result = ec.guess()
                     print(f'Guess: {guess_result}')
                     ec.input_encoding = guess_result['encoding']
-                if ec.convert():
-                    print(f'Wrote to {ec.output_file} in {ec.output_encoding}')
-                    os.remove(input_path)
-                else:
-                    print(f'Conversion failed.')
+                try:
+                    if ec.convert():
+                        print(f'Wrote to {ec.output_file} in {ec.output_encoding}')
+                        os.remove(input_path)
+                    else:
+                        raise Exception(f'Conversion failed.')
+                except Exception as e:
+                    print(e)
                     os.rename(input_path, os.path.join(args.input_dir, f'{failure_mark}{filename}'))
     except KeyboardInterrupt:
         pass

@@ -2,26 +2,23 @@ import chardet
 import os
 
 class EncodingConverter:
-    def __init__(self, *args, **kwargs):
-        """Constructor
-
-        :attribute str input_file: mandatory input file path
-        :attribute str input_encoding: optional input encoding
-        :attribute int guess_length: number of bytes to use for guessing
-        :attribute str output_encoding: optional output encoding
-        :attribute str output_file: optional output file path
-        :attribute bool overwrite: won't confirm overwrite when True
-        """
+    def __init__(self,
+                *args, 
+                input_file=None,
+                input_encoding='guess',
+                guess_length=1024,
+                output_encoding='utf-8',
+                output_file=None,
+                overwrite=False,
+                **kwargs):
+        self.input_file = input_file
+        self.input_encoding = input_encoding
+        self.guess_length = guess_length
+        self.output_encoding = output_encoding
+        self.output_file = output_file
+        self.overwrite = overwrite
         for k, v in kwargs.items():
             setattr(self, k, v)
-        assert getattr(self, 'input_file') is not None
-        self.filebytes = self._read()
-        assert getattr(self, 'input_encoding') is not None
-        assert getattr(self, 'guess_length') is not None
-        assert getattr(self, 'output_encoding') is not None
-        assert getattr(self, 'output_file') is not None
-        assert getattr(self, 'overwrite') is not None
-        self.converted_str = None
 
     @property
     def output_file(self):
@@ -40,7 +37,8 @@ class EncodingConverter:
         self._output_file = value
 
     def guess(self):
-        return chardet.detect(self.filebytes[:self.guess_length])
+        sample = self._read(length=self.guess_length)
+        return chardet.detect(sample)
 
     def convert(self):
         try:
@@ -50,7 +48,8 @@ class EncodingConverter:
                 if overwrite_ok.lower() != 'y':
                     print('Abort writting.')
                     return False
-            decoded_str = self.filebytes.decode(self.input_encoding, errors='ignore')
+            filebytes = self._read()
+            decoded_str = filebytes.decode(self.input_encoding, errors='ignore')
             with open(self.output_file, 'w', encoding=self.output_encoding) as file:
                 file.write(decoded_str)
             return True
@@ -58,12 +57,14 @@ class EncodingConverter:
             raise Exception(f'Failed to write to file {self.output_file}. ') from e
 
 
-    def _read(self):
+    def _read(self, length=-1):
         try:
             with open(self.input_file, 'rb') as file:
                 filebytes = b''
                 for line in file.readlines():
                     filebytes += line
-                return filebytes
+                    if length > -1 and len(filebytes) >= length:
+                        break
+                return filebytes[:length]
         except Exception as e:
             raise Exception(f'Failed to read file {self.input_file}. ') from e
