@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="enconv",
-    version="0.0.1",
+    version="0.0.2",
     author="Joy Yeh",
     author_email="joyyeh.tw@gmail.com",
     description="Encodinger conversion wrapper around chardet.",
