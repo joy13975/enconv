@@ -1,0 +1,4 @@
+#!/usr/bin/env python
+
+from enconv import encheck
+encheck.main()
