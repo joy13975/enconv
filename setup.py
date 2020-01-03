@@ -8,15 +8,15 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="enconv",
-    version="0.0.2",
+    version="0.0.3",
     author="Joy Yeh",
     author_email="joyyeh.tw@gmail.com",
-    description="Encodinger conversion wrapper around chardet.",
+    description="Encoding conversion utilities based on chardet.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/joy13975/enconv",
     packages=setuptools.find_packages(),
-    scripts=['bin/enconv'],
+    scripts=['bin/enconv', 'bin/enportal', 'bin/encheck'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
