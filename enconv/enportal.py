@@ -1,15 +1,18 @@
 import argparse
 import os
 from time import sleep
+import traceback
 
 from .encoding_converter import EncodingConverter
 
 exclude_files = ['.DS_Store']
 include_extensions = ['txt']
 
+
 def main(*args, **kwargs):
     ap = argparse.ArgumentParser(description='Guess and convert '
-        'file encodings from source to destination folders')
+                                 'file encodings from source to '
+                                 'destination folders')
     ap.add_argument('input_dir',
                     help='Input directory',
                     type=str)
@@ -25,12 +28,13 @@ def main(*args, **kwargs):
     ap.add_argument('-oe', '--output_encoding',
                     help='Output enconding',
                     default='utf-8')
-    ap.add_argument('-ow', '--overwrite', 
-                    help='When set, won\'t confirm when attempting to overwrite.',
+    ap.add_argument('-ow', '--overwrite',
+                    help='When set, won\'t confirm when attempting to '
+                    'overwrite.',
                     action='store_true')
     ap.add_argument('-i', '--interval',
                     help='Loop interval in seconds.',
-                    default=1)
+                    default=2)
     args = ap.parse_args()
     if not os.path.isdir(args.input_dir):
         print('Input directory is not a directory')
@@ -47,19 +51,21 @@ def main(*args, **kwargs):
         f'                   |                    \n'
         f'                   V                    \n'
         f'dst: "{args.output_dir}" ({args.output_encoding})'
-        )
+    )
     failure_mark = 'encodefailed.'
     try:
+        print(f'Checking every {args.interval:.1f} seconds...')
         while True:
             sleep(args.interval)
             filenames = [f for f in os.listdir(args.input_dir)
-                        if os.path.isfile(os.path.join(args.input_dir, f))]
+                         if os.path.isfile(os.path.join(args.input_dir, f))]
             for filename in filenames:
-                if filename.startswith(failure_mark) or filename in exclude_files:
+                if filename.startswith(failure_mark) or filename in \
+                        exclude_files:
                     continue
                 if filename.split('.')[-1] not in include_extensions:
                     continue
-                print(f'Converting {filename}')
+                print(f'\nNew file: {filename}')
                 ec_args = args_dict.copy()
                 input_path = os.path.join(args.input_dir, filename)
                 ec_args['input_file'] = input_path
@@ -72,16 +78,19 @@ def main(*args, **kwargs):
                     ec.input_encoding = guess_result['encoding']
                 try:
                     if ec.convert():
-                        print(f'Wrote to {ec.output_file} in {ec.output_encoding}')
+                        print(f'Wrote to {ec.output_file} in '
+                              f'{ec.output_encoding}')
                         os.remove(input_path)
                     else:
                         raise Exception(f'Conversion failed.')
                 except Exception as e:
                     print(e)
-                    os.rename(input_path, os.path.join(args.input_dir, f'{failure_mark}{filename}'))
+                    traceback.print_exc()
+                    os.rename(input_path, os.path.join(
+                        args.input_dir, f'{failure_mark}{filename}'))
     except KeyboardInterrupt:
         pass
 
 
-if __name__  == '__main__':
+if __name__ == '__main__':
     main()
