@@ -13,7 +13,7 @@ Optionally create virtual env
 
 ### enconv: Guess and convert between encodings
 ```bash
-usage: enconv.py [-h] [-ie INPUT_ENCODING] [-gl GUESS_LENGTH]
+usage: enconv [-h] [-ie INPUT_ENCODING] [-gl GUESS_LENGTH]
                  [-oe OUTPUT_ENCODING] [-of OUTPUT_FILE] [-ow]
                  input_file
 ```
