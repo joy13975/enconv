@@ -3,8 +3,6 @@ A light wrapper around chardet to conveniently convert text files.
 
 # Install
 
-Optionally create virtual env
-
 ```
 ~$ pip install enconv
 ```

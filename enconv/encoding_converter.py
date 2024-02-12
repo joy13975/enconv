@@ -38,8 +38,18 @@ class EncodingConverter:
         self._output_file = value
 
     def guess(self):
-        sample = self._read(length=self.guess_length)
-        return chardet.detect(sample)
+        '''
+        Read samples from target file incrementally until encoding is guessed.
+        '''
+        offset = 0
+        while True:
+            sample = self._read(offset=offset, length=self.guess_length)
+            if len(sample) == 0:
+                raise Exception('Failed to guess encoding upon exhausting samples!')
+            res = chardet.detect(sample)
+            if res['encoding'] is not None:
+                return res
+            offset += self.guess_length
 
     def convert(self, silent=False):
         try:
@@ -79,7 +89,7 @@ class EncodingConverter:
             filesize /= 1024
         print(f'File size: {filesize:.1f} {units[unit_idx]}')
 
-    def _read(self, length=-1):
+    def _read(self, offset=0, length=-1):
         try:
             # Blocked reading is a lot faster than taking a potentially very
             # large file into RAM
@@ -87,6 +97,7 @@ class EncodingConverter:
             byte_lines = []
             rough_len = 0
             with open(self.input_file, 'rb') as file:
+                file.seek(offset)
                 while True:
                     block = file.readlines(block_size)
                     if not block:
