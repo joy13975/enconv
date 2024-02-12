@@ -1,3 +1,4 @@
+.pypi
 .venv/
 __pycache__/
 build/
